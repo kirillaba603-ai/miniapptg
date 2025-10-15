@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💎 Luno Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-primary: #0a0a1e;
+            --bg-secondary: #1a1a2e;
+            --bg-card: rgba(255, 255, 255, 0.06);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --gradient-1: #667eea;
+            --gradient-2: #764ba2;
+            --gradient-3: #4facfe;
+            --gradient-4: #00f2fe;
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-medium: 0 12px 48px rgba(0, 0, 0, 0.4);
+            --shadow-strong: 0 20px 60px rgba(102, 126, 234, 0.5);
+            --border-radius: 20px;
+            --border-radius-lg: 28px;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.95);
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --text-primary: #2d3748;
+            --text-secondary: rgba(45, 55, 72, 0.8);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --shadow-strong: 0 12px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 60% 60%, rgba(0, 242, 254, 0.08) 0%, transparent 60%);
+            animation: gradientShift 20s ease infinite;
+            z-index: -2;
+        }
+
+        [data-theme="light"] body::before {
+            opacity: 0.4;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            33% { transform: scale(1.1) rotate(120deg); }
+            66% { transform: scale(0.9) rotate(240deg); }
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .theme-toggle ion-icon {
+            font-size: 26px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.4), rgba(79, 172, 254, 0.3));
+            border-radius: 50%;
+            animation: float 25s infinite linear;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px) scale(0.5); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            top: -20px;
+            z-index: 9999;
+            animation: confetti-fall 4s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 120px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 32px 24px;
+            background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 50%, var(--gradient-3) 100%);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-strong);
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 4s infinite;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-40px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .header-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .header-icon ion-icon {
+            font-size: 40px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            opacity: 0.95;
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px rgba(74, 222, 128, 0.5)); }
+            to { filter: drop-shadow(0 0 15px rgba(74, 222, 128, 0.8)); }
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 6px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .guarantee-badges {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            animation: fadeInScale 1s ease 0.3s both;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .badge-item {
+            background: var(--bg-card);
+            padding: 16px 10px;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            backdrop-filter: blur(20px);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .badge-item:hover::before {
+            left: 100%;
+        }
+
+        .badge-item:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .badge-icon {
+            width: 36px;
+            height: 36px;
+            margin: 0 auto 8px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .badge-icon ion-icon {
+            font-size: 20px;
+            color: white;
+        }
+
+        .badge-text {
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .trust-block {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+            border-radius: var(--border-radius);
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            animation: fadeInScale 1s ease 0.5s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trust-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+            animation: scanline 4s infinite;
+        }
+
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .trust-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            padding: 4px 0;
+        }
+
+        .trust-title {
+            font-size: 19px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .trust-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trust-icon ion-icon {
+            font-size: 18px;
+            color: white;
+        }
+
+        .trust-toggle {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.8;
+        }
+
+        .trust-toggle ion-icon {
+            font-size: 24px;
+            color: var(--text-primary);
+        }
+
+        .trust-toggle.active {
+            transform: rotate(180deg);
+        }
+
+        .trust-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .trust-content.active {
+            max-height: 300px;
+            margin-top: 16px;
+        }
+
+        .trust-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        [data-theme="light"] .trust-item {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .trust-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(6px);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .trust-item-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .trust-item-icon ion-icon {
+            font-size: 14px;
+            color: white;
+        }
+
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(22, 33, 62, 0.98));
+            backdrop-filter: blur(30px);
+            border-radius: var(--border-radius);
+            padding: 18px 22px;
+            min-width: 320px;
+            max-width: 90%;
+            box-shadow: var(--shadow-strong);
+            border: 2px solid rgba(102, 126, 234, 0.4);
+            z-index: 5000;
+            transform: translateX(400px);
+            animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        @keyframes slideInRight {
+            to { transform: translateX(0); }
+        }
+
+        .toast-notification.hide {
+            animation: slideOutRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideOutRight {
+            to { transform: translateX(400px); }
+        }
+
+        .toast-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .toast-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(8px);
+        }
+
+        .toast-avatar ion-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-name {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .toast-product {
+            font-size: 13px;
+            opacity: 0.9;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .toast-time {
+            font-size: 11px;
+            opacity: 0.6;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            animation: fadeInScale 1s ease 0.2s both;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 14px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .tab:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .tab ion-icon {
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .reviews-section {
+            margin-bottom: 24px;
+            animation: fadeInScale 1s ease 0.6s both;
+        }
+
+        .reviews-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 0 6px;
+        }
+
+        .reviews-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reviews-header ion-icon {
+            font-size: 22px;
+            color: #fbbf24;
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 18px;
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+        }
+
+        .reviews-container {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            padding: 10px 6px 20px 6px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .reviews-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .review {
+            min-width: 300px;
+            max-width: 300px;
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 22px;
+            border: 2px solid var(--border-color);
+            scroll-snap-align: start;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .review:hover::before {
+            transform: scaleX(1);
+        }
+
+        .review:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+
+        .review-author {
+            font-weight: 700;
+            font-size: 16px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-author ion-icon {
+            font-size: 20px;
+            color: var(--gradient-1);
+        }
+
+        .review-time {
+            font-size: 12px;
+            opacity: 0.7;
+            background: var(--bg-card);
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .review-stars {
+            color: #fbbf24;
+            font-size: 16px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.3));
+        }
+
+        .review-text {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        .products {
+            display: grid;
+            gap: 24px;
+        }
+
+        .product {
+            background: var(--bg-card);
+            border-radius: var(--border-radius-lg);
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .product::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2), var(--gradient-3), var(--gradient-4));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s ease;
+        }
+
+        .product:hover::before {
+            transform: scaleX(1);
+        }
+
+        .product:hover {
+            transform: translateY(-12px);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .product:active {
+            transform: translateY(-12px) scale(0.98);
+        }
+
+        .urgency-timer {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+
+        .urgency-timer ion-icon {
+            font-size: 16px;
+        }
+
+        .product-icon-wrapper {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 24px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: var(--shadow-medium);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .product-icon-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 28px;
+            background: inherit;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(12px);
+        }
+
+        .product-icon-wrapper ion-icon {
+            font-size: 52px;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .icon-green {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+        }
+
+        .icon-purple {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+        }
+
+        .icon-pink {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+
+        .icon-orange {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .icon-blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .icon-red {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 18px;
+        }
+
+        .product-title {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.4;
+            flex: 1;
+            margin-right: 16px;
+        }
+
+        .product-price {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+            filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5));
+        }
+
+        .product-desc {
+            font-size: 15px;
+            line-height: 1.8;
+            opacity: 0.85;
+            margin-top: 14px;
+        }
+
+        .price-includes {
+            background: linear-gradient(135deg, rgba(76, 222, 128, 0.15), rgba(34, 197, 94, 0.1));
+            border: 2px solid rgba(76, 222, 128, 0.3);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-includes::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(76, 222, 128, 0.1), transparent);
+            animation: scanline 3s infinite;
+        }
+
+        .price-includes-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #4ade80;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .price-includes-title ion-icon {
+            font-size: 18px;
+        }
+
+        .price-includes-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .price-includes-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+        }
+
+        .price-includes-item ion-icon {
+            font-size: 16px;
+            color: #4ade80;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 16px;
+            box-shadow: var(--shadow-soft);
+            animation: wiggle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+        }
+
+        .buy-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 28px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 20px;
+            width: 100%;
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .buy-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .buy-btn:hover::before {
+            left: 100%;
+        }
+
+        .buy-btn ion-icon {
+            font-size: 22px;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(74, 222, 128, 0.5);
+        }
+
+        .buy-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .payment-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            display: none;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .payment-modal.active {
+            display: block;
+            animation: modalFadeIn 0.4s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .payment-content {
+            max-width: 540px;
+            margin: 40px auto;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            padding: 36px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            box-shadow: var(--shadow-strong);
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .payment-header h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .price-summary {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+            padding: 24px;
+            border-radius: var(--border-radius);
+            margin: 24px 0;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            font-size: 16px;
+        }
+
+        .price-row.total {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .promo-input {
+            width: 100%;
+            padding: 18px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .promo-input:focus {
+            outline: none;
+            border-color: var(--gradient-1);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .payment-methods {
+            display: grid;
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        .payment-method {
+            padding: 22px;
+            background: var(--bg-card);
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-method::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .payment-method:hover::before {
+            left: 100%;
+        }
+
+        .payment-method-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .payment-method-icon ion-icon {
+            font-size: 26px;
+            color: white;
+        }
+
+        .payment-method:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .payment-method.selected {
+            border-color: var(--gradient-1);
+            background: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+            transform: scale(1.02);
+        }
+
+        .payment-details {
+            background: var(--bg-card);
+            padding: 28px;
+            border-radius: var(--border-radius);
+            margin: 24px 0;
+            display: none;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+        }
+
+        .payment-details.active {
+            display: block;
+            animation: fadeInScale 0.3s ease;
+        }
+
+        .payment-info {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 14px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .payment-info:hover {
+            background: rgba(0, 0, 0, 0.6);
+            transform: scale(1.02);
+            border-color: var(--gradient-1);
+        }
+
+        .payment-info ion-icon {
+            font-size: 22px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn ion-icon {
+            font-size: 24px;
+        }
+
+        .btn:hover {
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: var(--shadow-medium);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+            
+            header {
+                padding: 24px 20px;
+            }
+            
+            .product {
+                padding: 24px;
+            }
+            
+            .product-icon-wrapper {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .product-icon-wrapper ion-icon {
+                font-size: 40px;
+            }
+            
+            .guarantee-badges {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .trust-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+/* === Additions: Tooltips (13) & Payment Loader (14) === */
+.tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  margin-left: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(140,160,255,.6);
+  color: rgba(180,195,255,.95);
+  font-size: 12px;
+  cursor: default;
+  user-select: none;
+}
+.tip::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 50%; bottom: 130%;
+  transform: translateX(-50%);
+  background: rgba(12,14,28,.96);
+  color: #eaf0ff;
+  border: 1px solid rgba(70,90,160,.6);
+  border-radius: 8px;
+  padding: 6px 8px;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease, transform .12s ease;
+  z-index: 50;
+}
+html[data-theme="light"] .tip::after {
+  background: #0f1430;
+  color: #fff;
+  border-color: rgba(90,120,220,.5);
+}
+.tip:hover::after { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+
+/* Loader overlay */
+#payment-loader {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6,8,18,.55);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+}
+html[data-theme="light"] #payment-loader { background: rgba(10,12,20,.35); }
+#payment-loader .spinner {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 4px solid rgba(150,170,255,.25);
+  border-top-color: #7c9cff;
+  animation: luno-spin .9s linear infinite;
+  box-shadow: 0 0 18px rgba(124,156,255,.35);
+}
+@keyframes luno-spin { to { transform: rotate(360deg); } }
+#payment-loader .text {
+  margin-top: 14px;
+  font-weight: 700;
+  color: #cfd6ff;
+  text-shadow: 0 0 10px rgba(124,156,255,.25);
+  text-align: center;
+}
+
+</style>
+</head>
+<body data-theme="dark">
+    <div class="particles" id="particles"></div>
+
+    <div class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+        <ion-icon name="moon"></ion-icon>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-icon">
+                <ion-icon name="diamond"></ion-icon>
+            </div>
+            <h1>Luno Shop</h1>
+            <p class="subtitle">Приватные читы и голда для Standoff 2</p>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-number" id="todayPurchases">127</div>
+                    <div class="stat-label">Покупок за 24ч</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2,847+</div>
+                    <div class="stat-label">Всего клиентов</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="guarantee-badges">
+            <div class="badge-item">
+                <div class="badge-icon">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                </div>
+                <div class="badge-text">Возврат средств</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">
+                    <ion-icon name="shield-checkmark"></ion-icon>
+                </div>
+                <div class="badge-text">Безопасная оплата</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">
+                    <ion-icon name="flash"></ion-icon>
+                </div>
+                <div class="badge-text">Доставка 15 мин</div>
+            </div>
+            <div class="badge-item">
+                <div class="badge-icon">
+                    <ion-icon name="headset"></ion-icon>
+                </div>
+                <div class="badge-text">Поддержка 24/7</div>
+            </div>
+        </div>
+
+        <div class="trust-block">
+            <div class="trust-header" onclick="toggleTrust()">
+                <div class="trust-title">
+                    <div class="trust-icon">
+                        <ion-icon name="diamond"></ion-icon>
+                    </div>
+                    Почему нам доверяют
+                </div>
+                <div class="trust-toggle" id="trustToggle">
+                    <ion-icon name="chevron-down"></ion-icon>
+                </div>
+            </div>
+            <div class="trust-content" id="trustContent">
+                <div class="trust-items">
+                    <div class="trust-item">
+                        <div class="trust-item-icon">
+                            <ion-icon name="checkmark"></ion-icon>
+                        </div>
+                        С 2023 года
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-item-icon">
+                            <ion-icon name="checkmark"></ion-icon>
+                        </div>
+                        2,800+ клиентов
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-item-icon">
+                            <ion-icon name="checkmark"></ion-icon>
+                        </div>
+                        4.9★ рейтинг
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-item-icon">
+                            <ion-icon name="checkmark"></ion-icon>
+                        </div>
+                        98% отзывов
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-item-icon">
+                            <ion-icon name="checkmark"></ion-icon>
+                        </div>
+                        5000+ в канале
+                    </div>
+                    <div class="trust-item">
+                        <div class="trust-item-icon">
+                            <ion-icon name="checkmark"></ion-icon>
+                        </div>
+                        Без банов
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('cheats')">
+                <ion-icon name="code-slash"></ion-icon>
+                Читы
+            </button>
+            <button class="tab" onclick="switchTab('gold')">
+                <ion-icon name="cash"></ion-icon>
+                Голда
+            </button>
+        </div>
+
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <h3>
+                    <ion-icon name="star"></ion-icon>
+                    Отзывы
+                </h3>
+                <div class="stars">★★★★★</div>
+            </div>
+            <div class="reviews-container" id="reviewsContainer"></div>
+        </div>
+
+        <div id="products" class="products"></div>
+    </div>
+
+    <div id="paymentModal" class="payment-modal">
+        <div class="payment-content">
+            <div class="payment-header">
+                <h2>
+                    <ion-icon name="card"></ion-icon>
+                    Оплата заказа
+                </h2>
+                <p id="selectedProductName"></p>
+            </div>
+
+            <div class="price-summary">
+                <div class="price-row">
+                    <span>Базовая цена:</span>
+                    <span id="basePrice">0₽</span>
+                </div>
+                <div class="price-row" id="discountRow" style="display: none;">
+                    <span>Скидка:</span>
+                    <span id="discountAmount" style="color: #4ade80;">0₽</span>
+                </div>
+                <div class="price-row total">
+                    <span>Итого:</span>
+                    <span id="finalPrice">0₽</span>
+                </div>
+            </div>
+
+            <div class="promo-section">
+                <input type="text" class="promo-input" id="promoInput" placeholder="🎁 Введите промокод">
+                <button class="btn btn-secondary" onclick="applyPromo()">
+                    <ion-icon name="gift"></ion-icon>
+                    Применить промокод
+                </button>
+            </div>
+
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPayment('card')">
+                    <div class="payment-method-icon">
+                        <ion-icon name="card"></ion-icon>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px;">Банковская карта</div>
+                        <div style="font-size: 13px; opacity: 0.7; margin-top: 4px;">МИР, VISA, Mastercard</div>
+                    </div>
+                </div>
+                <div class="payment-method" onclick="selectPayment('yoomoney')">
+                    <div class="payment-method-icon">
+                        <ion-icon name="wallet"></ion-icon>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px;">ЮMoney</div>
+                        <div style="font-size: 13px; opacity: 0.7; margin-top: 4px;">Электронный кошелек</div>
+                    </div>
+                </div>
+                <div class="payment-method" onclick="selectPayment('sbp')">
+                    <div class="payment-method-icon">
+                        <ion-icon name="flash"></ion-icon>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px;">СБП</div>
+                        <div style="font-size: 13px; opacity: 0.7; margin-top: 4px;">Быстрый платеж без комиссии</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cardDetails" class="payment-details">
+                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <ion-icon name="card"></ion-icon>
+                    Реквизиты карты
+                </h3>
+                <div class="payment-info" onclick="copyText('2204120131819811')">
+                    <span>2204120131819811</span>
+                    <ion-icon name="copy"></ion-icon>
+                </div>
+                <p style="margin: 12px 0; opacity: 0.7; font-size: 13px;">💡 Нажмите на номер карты, чтобы скопировать</p>
+            </div>
+
+            <div id="yoomoneyDetails" class="payment-details">
+                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <ion-icon name="wallet"></ion-icon>
+                    ЮMoney кошелек
+                </h3>
+                <div class="payment-info" onclick="copyText('Не работает')">
+                    <span>Не работает</span>
+                    <ion-icon name="copy"></ion-icon>
+                </div>
+                <p style="margin: 12px 0; opacity: 0.7; font-size: 13px;">💡 Нажмите на номер кошелька, чтобы скопировать</p>
+            </div>
+
+            <div id="sbpDetails" class="payment-details">
+                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <ion-icon name="flash"></ion-icon>
+                    СБП перевод
+                </h3>
+                <div class="payment-info" onclick="copyText('+79011947508')">
+                    <span>+79011947508</span>
+                    <ion-icon name="copy"></ion-icon>
+                </div>
+                <p style="margin: 16px 0 8px 0;"><strong>Получатель:</strong> Евгений Алексеевич Е. </p>
+                <p style="margin: 8px 0;"><strong>Банк:</strong> ЮMoney </p>
+                <p style="margin: 12px 0 0 0; opacity: 0.7; font-size: 13px;">💡 Нажмите на номер телефона, чтобы скопировать</p>
+            </div>
+
+            <button class="btn" onclick="confirmPayment()">
+                <ion-icon name="checkmark-circle"></ion-icon>
+                Оплатил - Подтвердить
+            </button>
+            <button class="btn btn-secondary" onclick="closePaymentModal()">
+                <ion-icon name="close-circle"></ion-icon>
+                Отменить заказ
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 6 + 3) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 25 + 's';
+                particle.style.animationDuration = (Math.random() * 15 + 20) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        function toggleTheme() {
+            const body = document.body;
+            const toggle = document.getElementById('themeToggle');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                toggle.innerHTML = '<ion-icon name="sunny"></ion-icon>';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                toggle.innerHTML = '<ion-icon name="moon"></ion-icon>';
+            }
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#667eea', '#764ba2', '#4ade80', '#fbbf24', '#ef4444', '#8b5cf6', '#4facfe', '#00f2fe'];
+            for (let i = 0; i < 120; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.8 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 25);
+            }
+        }
+
+        function toggleTrust() {
+            const content = document.getElementById('trustContent');
+            const toggle = document.getElementById('trustToggle');
+            content.classList.toggle('active');
+            toggle.classList.toggle('active');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+        }
+
+        function animateCounter() {
+            const counter = document.getElementById('todayPurchases');
+            let count = 127;
+            setInterval(() => {
+                count += Math.floor(Math.random() * 3);
+                counter.textContent = count;
+            }, 30000);
+        }
+        animateCounter();
+
+        const notifications = [
+            { name: 'Максим', product: 'ВХ ЧЕРЕЗ СТЕНЫ', time: 2, icon: 'person' },
+            { name: 'Артём', product: '1000 GOLD', time: 5, icon: 'game-controller' },
+            { name: 'Игорь', product: 'АДМИН ПАНЕЛЬ', time: 8, icon: 'flash' },
+            { name: 'Кирилл', product: '500 GOLD', time: 12, icon: 'diamond' },
+            { name: 'Никита', product: 'ПАНЕЛЬ РАЗРАБА', time: 15, icon: 'rocket' },
+            { name: 'Владислав', product: '3000 GOLD', time: 18, icon: 'star' },
+            { name: 'Дмитрий', product: 'ВХ + СКИНЫ', time: 22, icon: 'trophy' }
+        ];
+
+        let notifIndex = 0;
+        function showToast() {
+            const notif = notifications[notifIndex % notifications.length];
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `
+                <div class="toast-avatar">
+                    <ion-icon name="${notif.icon}"></ion-icon>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-name">${notif.name}</div>
+                    <div class="toast-product">Купил: ${notif.product}</div>
+                    <div class="toast-time">${notif.time} мин назад</div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 600);
+            }, 6000);
+            
+            notifIndex++;
+        }
+
+        setInterval(showToast, 12000);
+        setTimeout(showToast, 2000);
+
+        const reviews = {
+            cheats: [
+                { author: 'Максим', time: '1 час назад', text: 'Чит ЛЮТЕЙШАЯ ИМБА! Меня не банит уже 2 недели, все функции работают, ЕБ* ЧИТЕРОВ НА УРА!' },
+                { author: 'Артём', time: '3 часа назад', text: 'Купил ВХ и скинченджер - всё супер! Работает без лагов, рекомендую всем 🔥' },
+                { author: 'Даниил', time: '5 часов назад', text: 'Админ панель просто огонь! Наконец-то могу нормально играть, спасибо!' },
+                { author: 'Игорь', time: '8 часов назад', text: 'Взял панель разраба - не ожидал такого! Голду себе выдаю сколько хочу 💎' },
+                { author: 'Владимир', time: '12 часов назад', text: 'Лучший магазин читов! Быстрая доставка, всё работает. Уже купил 3 раза ⚡' },
+                { author: 'Сергей', time: '1 день назад', text: 'Скинченджер топ! Все скины есть, работает стабильно без вылетов 🎮' },
+                { author: 'Александр', time: '1 день назад', text: 'Брал админку - шикарная вещь! Поддержка помогла настроить за 5 минут 🚀' },
+                { author: 'Михаил', time: '2 дня назад', text: 'Пользуюсь читом месяц - ни одного бана! Обновляется быстро, всё отлично работает 💪' }
+            ],
+            gold: [
+                { author: 'Алексей', time: '30 минут назад', text: 'Уже 5 раз покупаю голду здесь. Всегда быстро и без проблем! Топ магазин 💎' },
+                { author: 'Никита', time: '2 часа назад', text: 'Купил 1000 голды - пришло моментально! Теперь все скины мои, спасибо 💰' },
+                { author: 'Дмитрий', time: '4 часа назад', text: 'Думал развод, но нет! Голда реально зачислилась на аккаунт за 8 минут, советую!' },
+                { author: 'Андрей', time: '6 часов назад', text: 'Заказал 3000 голды - пришло быстрее чем ожидал! Лучший сервис, рекомендую 🔥' },
+                { author: 'Кирилл', time: '10 часов назад', text: 'Получил 500 голды на аккаунт за 10 минут! Я в шоке, не ожидал такой скорости! 🚀' },
+                { author: 'Роман', time: '1 день назад', text: 'Взял 1000 gold - всё пришло как обещали! Теперь могу покупать что хочу в игре ⚡' },
+                { author: 'Денис', time: '1 день назад', text: 'Голда зачислилась за 12 минут! Проверил баланс - всё на месте. Доволен на 100% 🎮' },
+                { author: 'Павел', time: '2 дня назад', text: 'Беру голду только тут уже полгода! Всегда быстро, честно, без обмана. Спасибо! 🖤' }
+            ]
+        };
+
+        const productData = {
+            cheats: [
+                { id: 'cheat_1', name: 'ВХ ЧЕРЕЗ СТЕНЫ - СКИНЧЕНДЖЕР', price: 250, oldPrice: 625,
+                  desc: 'Luno APK - приватный DLC для Android/PC/ios<br>Не требует Root-прав<br>Быстрые обновления при патчах',
+                  discount: 60, version: 'v0.35.3 / БЕЗ РУТ / ЛЮБЫЕ УСТРОЙСТВА',
+                  urgency: 'Осталось 2 часа по акции!', icon: 'eye', iconColor: 'icon-green',
+                  includes: ['Техподдержка 24/7', 'Обновления', 'Подробная инструкция', 'Гарантия 7 дней']
+                },
+                { id: 'cheat_2', name: 'АДМИН ПАНЕЛЬ + ВСЕ ФУНКЦИИ', price: 350, oldPrice: 875,
+                  desc: 'Полный доступ ко всем функциям<br>Максимальная безопасность<br>Постоянная поддержка разрабов',
+                  discount: 60, version: 'v0.35.3 / БЕЗ РУТ / ЛЮБЫЕ УСТРОЙСТВА',
+                  urgency: '14 человек смотрят сейчас', icon: 'flash', iconColor: 'icon-purple',
+                  includes: ['Приоритетная поддержка', 'Обновления навсегда', 'VIP инструкция', 'Гарантия 14 дней']
+                },
+                { id: 'cheat_3', name: 'ПАНЕЛЬ РАЗРАБА + ВЫДАЧА ГОЛДЫ', price: 500, oldPrice: 1250,
+                  desc: 'Максимальные возможности системы<br>Выдача голды себе и друзьям<br>Все VIP функции включены',
+                  discount: 60, version: 'v0.35.3 / БЕЗ РУТ / ЛЮБЫЕ УСТРОЙСТВА',
+                  urgency: 'В наличии: 5 шт', icon: 'rocket', iconColor: 'icon-pink',
+                  includes: ['Premium поддержка', 'Все обновления', 'Секретные функции', 'Гарантия 30 дней']
+                }
+            ],
+            gold: [
+                { id: 'gold_1', name: '500 GOLD', price: 250, oldPrice: 625,
+                  desc: 'СКИДКА 60%! Акция ограничена<br>500 золотых монет на аккаунт<br>Моментальное зачисление',
+                  discount: 60, badgeColor: '#ef4444', badgeText: '⚡ ОГРАНИЧЕНО',
+                  urgency: 'Акция до: 23:59', icon: 'diamond', iconColor: 'icon-orange',
+                  includes: ['Моментальная доставка', 'Без банов аккаунта', 'Гарантия зачисления', 'Поддержка 24/7']
+                },
+                { id: 'gold_2', name: '1000 GOLD', price: 350, oldPrice: 875,
+                  desc: 'СКИДКА 60%! Самый популярный<br>1000 золотых монет на аккаунт<br>Быстрое зачисление за 5-15 мин',
+                  discount: 60, badgeColor: '#f59e0b', badgeText: '🔥 ПОПУЛЯРНЫЙ',
+                  urgency: 'Акция до: 23:59', icon: 'diamond', iconColor: 'icon-blue',
+                  includes: ['Моментальная доставка', 'Без банов аккаунта', 'Гарантия зачисления', 'Поддержка 24/7']
+                },
+                { id: 'gold_3', name: '3000 GOLD', price: 425, oldPrice: 1062,
+                  desc: 'СКИДКА 60%! Максимальная выгода<br>3000 золотых монет на аккаунт<br>Хватит надолго, осталось мало',
+                  discount: 60, badgeColor: '#8b5cf6', badgeText: '💎 ВЫГОДНО',
+                  urgency: 'Акция до: 23:59', icon: 'diamond', iconColor: 'icon-red',
+                  includes: ['Моментальная доставка', 'Без банов аккаунта', 'Гарантия зачисления', 'Поддержка 24/7']
+                }
+            ]
+        };
+
+        let currentTab = 'cheats';
+        let selectedProduct = null;
+        let currentPaymentMethod = null;
+        let appliedPromo = null;
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderReviews();
+            renderProducts();
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+        }
+
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            container.innerHTML = '';
+            
+            reviews[currentTab].forEach((review, index) => {
+                const div = document.createElement('div');
+                div.className = 'review';
+                div.style.animationDelay = (index * 0.1) + 's';
+                div.innerHTML = `
+                    <div class="review-header">
+                        <div class="review-author">
+                            <ion-icon name="person-circle"></ion-icon>
+                            ${review.author}
+                        </div>
+                        <div class="review-time">${review.time}</div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <div class="review-text">${review.text}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = '';
+
+            productData[currentTab].forEach((product, index) => {
+                const div = document.createElement('div');
+                div.className = 'product';
+                div.style.animationDelay = (index * 0.1) + 's';
+                
+                const oldPriceHTML = product.oldPrice 
+                    ? `<div style="text-decoration: line-through; opacity: 0.5; font-size: 16px; margin-right: 8px;">${product.oldPrice}₽</div>`
+                    : '';
+                
+                const discountBadge = product.discount 
+                    ? `<div style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; margin-left: 8px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);">-${product.discount}%</div>`
+                    : '';
+                
+                const limitedBadge = product.badgeColor 
+                    ? `<span class="badge" style="background: linear-gradient(135deg, ${product.badgeColor}, ${product.badgeColor}dd);">${product.badgeText}</span>`
+                    : '';
+                
+                const versionInfo = product.version 
+                    ? `<div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 11px; opacity: 0.6; text-align: center; letter-spacing: 0.5px;">${product.version}</div>`
+                    : '';
+
+                const urgencyTimer = product.urgency 
+                    ? `<div class="urgency-timer"><ion-icon name="time"></ion-icon>${product.urgency}</div>`
+                    : '';
+
+                const priceIncludes = product.includes 
+                    ? `<div class="price-includes">
+                        <div class="price-includes-title">
+                            <ion-icon name="diamond"></ion-icon>
+                            Что входит в цену:
+                        </div>
+                        <div class="price-includes-list">
+                            ${product.includes.map(item => 
+                                `<div class="price-includes-item">
+                                    <ion-icon name="checkmark-circle"></ion-icon>
+                                    ${item}
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>`
+                    : '';
+                
+                div.innerHTML = `
+                    ${urgencyTimer}
+                    <div class="product-icon-wrapper ${product.iconColor}">
+                        <ion-icon name="${product.icon}"></ion-icon>
+                    </div>
+                    <div class="product-header">
+                        <div class="product-title">${product.name}</div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                ${oldPriceHTML}
+                                ${discountBadge}
+                            </div>
+                            <div class="product-price">${product.price}₽</div>
+                        </div>
+                    </div>
+                    <div class="product-desc">${product.desc}</div>
+                    ${limitedBadge}
+                    ${priceIncludes}
+                    <button class="buy-btn" onclick="event.stopPropagation(); handleBuyClick(this, '${product.id}')">
+                        <ion-icon name="cart"></ion-icon>
+                        Купить сейчас
+                    </button>
+                    ${versionInfo}
+                `;
+                div.onclick = () => handleProductClick(product);
+                container.appendChild(div);
+            });
+        }
+
+        function handleBuyClick(button, productId) {
+            if (navigator.vibrate) {
+                navigator.vibrate([70, 40, 70]);
+            }
+            
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+            }, 150);
+            
+            const product = productData[currentTab].find(p => p.id === productId);
+            if (product) {
+                openPaymentModal(product);
+            }
+        }
+
+        function handleProductClick(product) {
+            if (navigator.vibrate) {
+                navigator.vibrate(40);
+            }
+            openPaymentModal(product);
+        }
+
+        function openPaymentModal(product) {
+            selectedProduct = product;
+            appliedPromo = null;
+            currentPaymentMethod = null;
+            
+            document.getElementById('selectedProductName').textContent = product.name;
+            document.getElementById('basePrice').textContent = product.price + '₽';
+            document.getElementById('finalPrice').textContent = product.price + '₽';
+            document.getElementById('discountRow').style.display = 'none';
+            document.getElementById('promoInput').value = '';
+            
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+            document.querySelectorAll('.payment-details').forEach(d => d.classList.remove('active'));
+            
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function selectPayment(method) {
+            currentPaymentMethod = method;
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(40);
+            }
+            
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            document.querySelectorAll('.payment-details').forEach(d => d.classList.remove('active'));
+            document.getElementById(method + 'Details').classList.add('active');
+        }
+
+        function applyPromo() {
+            const promoCode = document.getElementById('promoInput').value.trim().toUpperCase();
+            
+            if (promoCode === 'FREE10') {
+                const discount = Math.round(selectedProduct.price * 0.1);
+                const finalPrice = selectedProduct.price - discount;
+                
+                appliedPromo = {code: promoCode, discount: 10};
+                
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountAmount').textContent = '-' + discount + '₽';
+                document.getElementById('finalPrice').textContent = finalPrice + '₽';
+                
+                if (navigator.vibrate) {
+                    navigator.vibrate([70, 70, 70]);
+                }
+                
+                tg.showPopup({
+                    title: '🎉 Промокод применён!',
+                    message: 'Скидка 10% активирована. Экономия: ' + discount + '₽',
+                    buttons: [{type: 'ok'}]
+                });
+            } else if (promoCode === 'REF20') {
+                const discount = Math.round(selectedProduct.price * 0.2);
+                const finalPrice = selectedProduct.price - discount;
+
+                appliedPromo = {code: promoCode, discount: 20};
+
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountAmount').textContent = '-' + discount + '₽';
+                document.getElementById('finalPrice').textContent = finalPrice + '₽';
+
+                if (navigator.vibrate) {
+                    navigator.vibrate([70, 70, 70]);
+                }
+
+                tg.showPopup({
+                    title: '🎉 Промокод применён!',
+                    message: 'Скидка 20% активирована. Экономия: ' + discount + '₽',
+                    buttons: [{type: 'ok'}]
+                });
+            } else {
+                if (navigator.vibrate) {
+                    navigator.vibrate([100, 50, 100]);
+                }
+                
+                tg.showPopup({
+                    title: '❌ Неверный промокод',
+                    message: 'Проверьте правильность, возможно использован уже максимальное кол-во раз',
+                    buttons: [{type: 'ok'}]
+                });
+            }
+        }
+
+        function copyText(text) {
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    tg.showPopup({
+                        title: '✅ Скопировано!',
+                        message: text,
+                        buttons: [{type: 'ok'}]
+                    });
+                });
+            } else {
+                tg.showPopup({
+                    title: '📋 Реквизиты',
+                    message: text,
+                    buttons: [{type: 'ok'}]
+                });
+            }
+        }
+
+        function confirmPayment() {
+            if (!currentPaymentMethod) {
+                if (navigator.vibrate) {
+                    navigator.vibrate([100, 50, 100]);
+                }
+                tg.showAlert('⚠️ Выберите способ оплаты');
+                return;
+            }
+            
+            const finalPrice = appliedPromo 
+                ? selectedProduct.price - Math.round(selectedProduct.price * appliedPromo.discount / 100)
+                : selectedProduct.price;
+            
+            createConfetti();
+            
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+            
+            // Проверяем, открыт ли WebApp через меню
+            const isMenuButton = !tg.initDataUnsafe.query_id;
+            
+            tg.sendData(JSON.stringify({
+                product_id: selectedProduct.id,
+                product_name: selectedProduct.name,
+                price: finalPrice,
+                original_price: selectedProduct.price,
+                promo_code: appliedPromo ? appliedPromo.code : null,
+                payment_method: currentPaymentMethod,
+                user_id: tg.initDataUnsafe?.user?.id || 0,
+                username: tg.initDataUnsafe?.user?.username || 'unknown'
+            }));
+            
+            if (isMenuButton) {
+                tg.showAlert(
+                    '✅ Заказ оформлен!\n\n' +
+                    '📸 Сейчас окно закроется.\n' +
+                    'Для отправки скриншота оплаты откройте бота через кнопку "Открыть магазин" в чате.'
+                );
+            }
+            
+            setTimeout(() => {
+                tg.close();
+            }, 2000);
+        }
+
+        tg.ready();
+        renderReviews();
+        renderProducts();
+    </script>
+
+<!-- Payment loader overlay (14) -->
+<div id="payment-loader" aria-hidden="true">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+    <div class="spinner"></div>
+    <div class="text">Проверка чека…</div>
+  </div>
+</div>
+
+
+<script>
+// === LUNO helpers for: notifications (4), loader (14), progress (11), tooltips (13) ===
+(function(){
+  const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+
+  // (4) Mini notifications via Telegram popup
+  function notify(title, message){
+    try {
+      if (tg && tg.showPopup) {
+        tg.showPopup({ title, message, buttons: [{ type: 'ok' }] });
+      } else {
+        alert(`${title}
+
+${message}`);
+      }
+    } catch(e){}
+  }
+  window.lunoNotify = notify;
+
+  // (14) Loader overlay controls
+  const loader = document.getElementById('payment-loader');
+  function showLoader(){ if (loader) loader.style.display = 'flex'; }
+  function hideLoader(){ if (loader) loader.style.display = 'none'; }
+  window.lunoShowLoader = showLoader;
+  window.lunoHideLoader = hideLoader;
+
+  // (11) Wrap Telegram MainButton progress around confirm flow
+  function withProgress(fn){
+    return async function(...args){
+      try {
+        if (tg && tg.MainButton) tg.MainButton.showProgress();
+        showLoader();
+        return await fn.apply(this, args);
+      } finally {
+        if (tg && tg.MainButton) tg.MainButton.hideProgress();
+        setTimeout(hideLoader, 400);
+      }
+    }
+  }
+
+  // (13) Attach small tooltips to payment methods if present
+  try {
+    const map = {
+      'sbp': 'СБП — моментальный перевод без комиссии.',
+      'card': 'Банковская карта (может взиматься комиссия банка).',
+      'yoomoney': 'ЮMoney — электронный кошелёк.'
+    };
+    const root = document.querySelector('#pay-methods') || document;
+    ['sbp','card','yoomoney'].forEach(key => {
+      const el = root.querySelector(`[data-pay="${key}"]`);
+      if (el && !el.querySelector('.tip')) {
+        const tip = document.createElement('span');
+        tip.className = 'tip'; tip.setAttribute('data-text', map[key] || '');
+        tip.textContent = '?';
+        el.appendChild(tip);
+      }
+    });
+  } catch(e){}
+
+  // Intercept confirmPayment if defined (wrap with progress+loader and add popup when sent) (11,14,4)
+  try {
+    const originalConfirm = window.confirmPayment;
+    if (typeof originalConfirm === 'function') {
+      window.confirmPayment = withProgress(function(){
+        let sent = false;
+        let sendRef = tg && tg.sendData;
+        if (tg && typeof tg.sendData === 'function') {
+          tg.sendData = function(payload){
+            sent = true;
+            try { return sendRef.call(tg, payload); }
+            finally {
+              setTimeout(() => notify('Спасибо 💎', 'Заявка отправлена. Ожидайте ответа бота.'), 150);
+            }
+          };
+        }
+        try {
+          return originalConfirm.apply(this, arguments);
+        } finally {
+          if (tg && sendRef) tg.sendData = sendRef;
+          if (!sent) setTimeout(hideLoader, 300);
+        }
+      });
+    }
+  } catch(e){}
+
+})();
+</script>
+
+</body>
+</html>
