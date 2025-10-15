@@ -1249,6 +1249,24 @@
             animation: fadeInScale 0.3s ease;
         }
 
+        .bank-highlight {
+            margin: 8px 0;
+            padding: 14px 18px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.4), rgba(118, 75, 162, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .bank-highlight strong {
+            font-weight: 900;
+        }
+
         .payment-info {
             background: rgba(0, 0, 0, 0.4);
             padding: 20px;
@@ -1665,7 +1683,7 @@ html[data-theme="light"] #payment-loader { background: rgba(10,12,20,.35); }
                     <ion-icon name="copy"></ion-icon>
                 </div>
                 <p style="margin: 16px 0 8px 0;"><strong>Получатель:</strong> Евгений Алексеевич Е. </p>
-                <p style="margin: 8px 0;"><strong>Банк:</strong> ЮMoney </p>
+                <p class="bank-highlight"><strong>Банк:</strong> ЮMoney</p>
                 <p style="margin: 12px 0 0 0; opacity: 0.7; font-size: 13px;">💡 Нажмите на номер телефона, чтобы скопировать</p>
             </div>
 
